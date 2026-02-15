@@ -19,7 +19,7 @@ DATASET_GROUP = "multichoice"
 METRICS_TYPE = "multichoice"
 
 # Few-shot: set to "{examples_type}" to enable 5-shot; set to None to disable. Default: off (None).
-examples_type = None
+examples_type = "{examples_type}"
 
 # Which branch runs is determined by examples_type above (None → default, no few-shot).
 GENERATION_ARGS = (
