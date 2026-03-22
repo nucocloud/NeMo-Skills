@@ -13,9 +13,9 @@
 # limitations under the License.
 
 import argparse
-import json
 from pathlib import Path
 
+from nemo_skills.dataset.utils import save_jsonl
 from nemo_skills.dataset.global_piqa.global_piqa_utils import (
     EXTRACT_REGEX,
     Schema,
@@ -40,17 +40,18 @@ def format_entry(entry: dict, language: str) -> dict:
 def main(args):
     invalid = set(args.languages) - set(supported_languages())
     if invalid:
-        raise ValueError(f"Unsupported languages: {invalid}")
+        raise ValueError(f"Unsupported languages: {invalid}. Supported: {supported_languages()}")
     datasets = load_global_piqa_datasets(args.languages)
 
     data_dir = Path(__file__).absolute().parent
     output_file = data_dir / "test.jsonl"
-    with open(output_file, "wt", encoding="utf-8") as fout:
-        for language in datasets:
-            for entry in datasets[language]:
-                entry = format_entry(entry=entry, language=language)
-                json.dump(entry, fout, ensure_ascii=False)
-                fout.write("\n")
+
+    all_entries = []
+    for language in datasets:
+        for entry in datasets[language]:
+            all_entries.append(format_entry(entry=entry, language=language))
+
+    save_jsonl(all_entries, output_file)
 
 
 if __name__ == "__main__":

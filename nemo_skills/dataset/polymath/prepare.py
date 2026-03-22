@@ -13,11 +13,12 @@
 # limitations under the License.
 
 import argparse
-import json
 import urllib.request
 from pathlib import Path
 
 import datasets
+
+from nemo_skills.dataset.utils import save_jsonl
 
 INSTRUCTIONS_URL = "https://raw.githubusercontent.com/QwenLM/PolyMath/main/instruction.py"
 
@@ -81,11 +82,7 @@ def main(args):
                 )
                 all_entries.append(formatted)
 
-    with open(output_file, "wt", encoding="utf-8") as fout:
-        for entry in all_entries:
-            json.dump(entry, fout, ensure_ascii=False)
-            fout.write("\n")
-
+    save_jsonl(all_entries, output_file)
     print(f"Saved to {output_file}")
 
 

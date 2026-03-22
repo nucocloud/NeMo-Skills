@@ -13,9 +13,9 @@
 # limitations under the License.
 
 import argparse
-import json
 from pathlib import Path
 
+from nemo_skills.dataset.utils import save_jsonl
 from nemo_skills.dataset.mmmlu.mmmlu_utils import (
     MULTILINGUAL_ANSWER_PATTERN_TEMPLATE,
     MULTILINGUAL_ANSWER_REGEXES,
@@ -56,17 +56,18 @@ def main(args):
 
     invalid = set(languages) - valid_languages
     if invalid:
-        raise ValueError(f"Unsupported languages: {invalid}")
+        raise ValueError(f"Unsupported languages: {invalid}. Supported: {SUPPORTED_LANGUAGES}")
     datasets = download_mmmlu_datasets(languages)
 
     data_dir = Path(__file__).absolute().parent
     output_file = data_dir / "test.jsonl"
-    with open(output_file, "wt", encoding="utf-8") as fout:
-        for language, examples in datasets.items():
-            for entry in examples:
-                entry = format_entry(entry=entry, language=language)
-                json.dump(entry, fout, ensure_ascii=False)
-                fout.write("\n")
+
+    all_entries = []
+    for language, examples in datasets.items():
+        for entry in examples:
+            all_entries.append(format_entry(entry=entry, language=language))
+
+    save_jsonl(all_entries, output_file)
 
 
 if __name__ == "__main__":
