@@ -83,7 +83,7 @@ def main(args):
                 all_entries.append(formatted)
 
     save_jsonl(all_entries, output_file)
-    print(f"Saved to {output_file}")
+    print(f"Saved {len(all_entries)} entries to {output_file}")
 
 
 if __name__ == "__main__":

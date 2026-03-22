@@ -48,10 +48,12 @@ def main(args):
 
     all_entries = []
     for language in datasets:
+        print(f"Processing {language}...")
         for entry in datasets[language]:
             all_entries.append(format_entry(entry=entry, language=language))
 
     save_jsonl(all_entries, output_file)
+    print(f"Saved {len(all_entries)} entries to {output_file}")
 
 
 if __name__ == "__main__":
