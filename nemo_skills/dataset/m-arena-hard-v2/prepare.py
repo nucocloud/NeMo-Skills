@@ -13,6 +13,7 @@
 # limitations under the License.
 
 import argparse
+import json
 from pathlib import Path
 
 import datasets
@@ -27,6 +28,8 @@ def format_entry(row: dict, language: str) -> dict:
     return {
         "question": row["prompt"],
         "question_id": row["question_id"],
+        # "hard_prompt" = judge generates its own answer before comparing,
+        # "creative_writing" = judge compares directly without generating own answer
         "category": row["category"],
         "subcategory": row.get("subcategory", ""),
         "language": language,
@@ -49,6 +52,19 @@ def main(args):
         for row in ds:
             all_entries.append(format_entry(row, language))
 
+    # Populate baseline_answer from a pre-generated JSONL file (e.g. output of generate pipeline)
+    if args.baseline_file:
+        baseline_lookup = {}
+        with open(args.baseline_file, "rt", encoding="utf-8") as f:
+            for line in f:
+                data = json.loads(line)
+                baseline_lookup[data["question_id"]] = data["generation"]
+        for entry in all_entries:
+            qid = entry["question_id"]
+            if qid not in baseline_lookup:
+                raise ValueError(f"question_id '{qid}' not found in baseline file")
+            entry["baseline_answer"] = baseline_lookup[qid]
+
     save_jsonl(all_entries, output_file)
     print(f"Saved {len(all_entries)} entries to {output_file}")
 
@@ -60,6 +76,11 @@ if __name__ == "__main__":
         default=SUPPORTED_LANGUAGES,
         nargs="+",
         help=f"Languages to include. Supported: {SUPPORTED_LANGUAGES}",
+    )
+    parser.add_argument(
+        "--baseline-file",
+        default=None,
+        help="Path to JSONL with baseline answers (must have 'question_id' and 'generation').",
     )
     args = parser.parse_args()
     main(args)
