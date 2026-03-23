@@ -15,7 +15,6 @@
 import argparse
 from pathlib import Path
 
-from nemo_skills.dataset.utils import save_jsonl
 from nemo_skills.dataset.global_piqa.global_piqa_utils import (
     EXTRACT_REGEX,
     Schema,
@@ -24,6 +23,7 @@ from nemo_skills.dataset.global_piqa.global_piqa_utils import (
     load_global_piqa_datasets,
     supported_languages,
 )
+from nemo_skills.dataset.utils import save_jsonl
 
 
 def format_entry(entry: dict, language: str) -> dict:

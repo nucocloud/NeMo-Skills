@@ -15,7 +15,6 @@
 import argparse
 from pathlib import Path
 
-from nemo_skills.dataset.utils import save_jsonl
 from nemo_skills.dataset.mmmlu.mmmlu_utils import (
     MULTILINGUAL_ANSWER_PATTERN_TEMPLATE,
     MULTILINGUAL_ANSWER_REGEXES,
@@ -25,6 +24,7 @@ from nemo_skills.dataset.mmmlu.mmmlu_utils import (
     get_mcq_fields,
     subject2category,
 )
+from nemo_skills.dataset.utils import save_jsonl
 
 
 def format_entry(entry: dict, language: str) -> dict:
