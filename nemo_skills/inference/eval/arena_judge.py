@@ -17,7 +17,6 @@ import logging
 import sys
 from copy import deepcopy
 from dataclasses import field
-import json
 
 import hydra
 
@@ -30,6 +29,7 @@ from nemo_skills.inference.model import server_params
 from nemo_skills.inference.model.base import EndpointType
 from nemo_skills.prompt.utils import get_prompt
 from nemo_skills.utils import (
+    sanitize_generation,
     get_help_message,
     get_logger_name,
     nested_dataclass,
@@ -135,20 +135,20 @@ class ArenaJudgeTask(GenerationTask):
             LOG.info("Example prompt in OpenAI format: \nData dictionary: %s", data_point)
             return
 
-        data_point["answer_1"] = json.dumps(data_point["generation"])
-        data_point["answer_2"] = json.dumps(data_point["baseline_answer"])
+        data_point["answer_1"] = sanitize_generation(data_point["generation"])
+        data_point["answer_2"] = sanitize_generation(data_point["baseline_answer"])
         LOG.info(
             "Example prompt:\nData dictionary: %s\nPrompt: %s", data_point, self.fill_prompt(data_point, all_data)
         )
 
     async def process_single_datapoint(self, data_point, all_data, prompt_format=None):
         gen_base_data = data_point.copy()
-        gen_base_data["answer_1"] = json.dumps(data_point["generation"])
-        gen_base_data["answer_2"] = json.dumps(data_point["baseline_answer"])
+        gen_base_data["answer_1"] = sanitize_generation(data_point["generation"])
+        gen_base_data["answer_2"] = sanitize_generation(data_point["baseline_answer"])
         # reversing the answers
         base_gen_data = data_point.copy()
-        base_gen_data["answer_2"] = json.dumps(data_point["generation"])
-        base_gen_data["answer_1"] = json.dumps(data_point["baseline_answer"])
+        base_gen_data["answer_2"] = sanitize_generation(data_point["generation"])
+        base_gen_data["answer_1"] = sanitize_generation(data_point["baseline_answer"])
 
         # Make two async calls instead of one batch call
         llm_output_1, llm_output_2 = await asyncio.gather(
