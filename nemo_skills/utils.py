@@ -21,6 +21,7 @@ import sys
 import tokenize
 import typing
 import unicodedata
+import json
 from dataclasses import MISSING, dataclass, fields, is_dataclass
 from math import lcm
 from pathlib import Path
@@ -644,5 +645,5 @@ def setup_make_sequence_length_divisible_by(tensor_model_parallel_size: int, con
 def sanitize_generation(generation: str) -> str:
     """json.dumps with sanitization for OpenAI API compatibility."""
     generation = unicodedata.normalize('NFC', generation)
-    generation = generation.encode('utf-8', errors='surrogatepass').decode('utf-8', errors='replace')
-    return generation
+    generation = generation.encode('utf-8', errors='replace').decode('utf-8', errors='replace')
+    return json.loads(json.dumps(generation))
