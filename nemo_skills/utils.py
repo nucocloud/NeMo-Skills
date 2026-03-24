@@ -644,6 +644,7 @@ def setup_make_sequence_length_divisible_by(tensor_model_parallel_size: int, con
 
 def sanitize_generation(generation: str) -> str:
     """json.dumps with sanitization for OpenAI API compatibility."""
-    generation = unicodedata.normalize('NFC', generation)
-    generation = generation.encode('utf-8', errors='replace').decode('utf-8', errors='replace')
-    return json.loads(json.dumps(generation))
+    s = json.dumps(generation, ensure_ascii=False)
+    s = s.encode('utf-8', errors='surrogatepass').decode('utf-8', errors='replace')
+    s = s.replace('\x00', '')
+    return json.loads(s)
