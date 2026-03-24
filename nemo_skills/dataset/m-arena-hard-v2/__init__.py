@@ -20,4 +20,5 @@ JUDGE_PIPELINE_ARGS = {
     "model": "openai/openai/gpt-5.2",
     "server_type": "openai",
     "server_address": "https://inference-api.nvidia.com/v1",
+    "sanitize_generations": True,
 }
