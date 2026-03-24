@@ -29,10 +29,10 @@ from nemo_skills.inference.model import server_params
 from nemo_skills.inference.model.base import EndpointType
 from nemo_skills.prompt.utils import get_prompt
 from nemo_skills.utils import (
-    sanitize_generation,
     get_help_message,
     get_logger_name,
     nested_dataclass,
+    sanitize_generation,
     setup_logging,
 )
 
@@ -151,8 +151,16 @@ class ArenaJudgeTask(GenerationTask):
 
     async def process_single_datapoint(self, data_point, all_data, prompt_format=None):
         gen_base_data = data_point.copy()
-        answer_gen = sanitize_generation(data_point["generation"]) if self.cfg.sanitize_generations else data_point["generation"]
-        answer_base = sanitize_generation(data_point["baseline_answer"]) if self.cfg.sanitize_generations else data_point["baseline_answer"]
+        answer_gen = (
+            sanitize_generation(data_point["generation"])
+            if self.cfg.sanitize_generations
+            else data_point["generation"]
+        )
+        answer_base = (
+            sanitize_generation(data_point["baseline_answer"])
+            if self.cfg.sanitize_generations
+            else data_point["baseline_answer"]
+        )
         gen_base_data["answer_1"] = answer_gen
         gen_base_data["answer_2"] = answer_base
         # reversing the answers
